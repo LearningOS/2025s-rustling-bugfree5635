@@ -9,8 +9,12 @@ struct ColorClassicStruct {
     red: u8,
     green: u8,
     blue: u8,
+    red: u8,
+    green: u8,
+    blue: u8,
 }
 
+struct ColorTupleStruct(u8, u8, u8);
 struct ColorTupleStruct(u8, u8, u8);
 
 #[derive(Debug)]
@@ -35,6 +39,7 @@ mod tests {
 
     #[test]
     fn tuple_structs() {
+        let green = ColorTupleStruct(0, 255, 0);
         let green = ColorTupleStruct(0, 255, 0);
 
         assert_eq!(green.0, 0);

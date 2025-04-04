@@ -2,8 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
-
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
@@ -29,13 +27,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: Clone + std::cmp::PartialOrd> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: Clone + std::cmp::PartialOrd> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -71,12 +69,46 @@ impl<T> LinkedList<T> {
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut ret = LinkedList::default();
+        let mut cur_a = list_a.start;
+        let mut cur_b = list_b.start;
+        loop {
+            match (cur_a, cur_b) {
+                (Some(node_a), Some(node_b)) => {
+                    let ptr_a = node_a.as_ptr();
+                    let ptr_b = node_b.as_ptr();
+                    unsafe {
+                        let val_a = &((*ptr_a).val);
+                        let val_b = &((*ptr_b).val);
+                        if val_a < val_b {
+                            ret.add(val_a.clone());
+                            cur_a = (*ptr_a).next;
+                        } else {
+                            ret.add(val_b.clone());
+                            cur_b = (*ptr_b).next;
+                        }
+                    }
+                }
+                (Some(node_a), None) => {
+                    let ptr_a = node_a.as_ptr();
+                    unsafe {
+                        let val_a = (*ptr_a).val.clone();
+                        ret.add(val_a);
+                        cur_a = (*ptr_a).next;
+                    }
+                }
+                (None, Some(node_b)) => {
+                    let ptr_b = node_b.as_ptr();
+                    unsafe {
+                        let val_b = (*ptr_b).val.clone();
+                        ret.add(val_b);
+                        cur_b = (*ptr_b).next;
+                    }
+                }
+                _ => break,
+            }
         }
+        ret
 	}
 }
 
